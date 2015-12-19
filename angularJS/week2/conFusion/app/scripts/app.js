@@ -59,7 +59,7 @@ angular.module('confusionApp', [])
               $scope.filtText = "";
           }
       };
-      
+
       $scope.isSelected = function (checkTab) {
           return ($scope.tab === checkTab);
       };
@@ -67,4 +67,19 @@ angular.module('confusionApp', [])
       $scope.toggleDetails = function() {
                 $scope.showDetails = !$scope.showDetails;
             };
-  }]);
+  }])
+
+.controller('ContactController', ['$scope', function($scope) {
+
+    $scope.feedback = {mychannel:"", 
+                       firstName:"", 
+                       lastName:"",
+                       agree:false, 
+                       email:"" };
+}])
+
+.controller('FeedbackController', ['$scope', function($scope) {
+
+}])
+
+;
