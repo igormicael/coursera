@@ -28,8 +28,8 @@ angular.module('confusionApp')
       };
 
       $scope.toggleDetails = function() {
-                $scope.showDetails = !$scope.showDetails;
-            };
+          $scope.showDetails = !$scope.showDetails;
+      };
   }])
 
 .controller('ContactController', ['$scope', function($scope) {
@@ -59,8 +59,7 @@ angular.module('confusionApp')
 
 .controller('DishDetailController', ['$scope', '$stateParams', 'menuFactory', function($scope, $stateParams, menuFactory) {
 
-    $scope.dish= menuFactory.getDish(parseInt($stateParams.id,10));
-    //$scope.dish = dish;
+    $scope.dish = menuFactory.getDish(parseInt($stateParams.id,10));
     
 }])
 
@@ -89,4 +88,17 @@ angular.module('confusionApp')
     };
 }])
 
+.controller('IndexController', ['$scope', 'corporateFactory', 'menuFactory', function($scope, corporateFactory, menuFactory) {
+
+  $scope.dish = menuFactory.getDish(0);
+  $scope.promotion = menuFactory.getPromotion(0);
+  $scope.leader = corporateFactory.getLeader(3);
+
+}])
+
+.controller('AboutController', ['$scope', 'corporateFactory', function($scope,corporateFactory) {
+
+  $scope.leaders= corporateFactory.getLeaders();
+
+}])
 ;
