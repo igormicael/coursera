@@ -44,6 +44,12 @@
           "rating": "2",
           "date": "2015-12-22T15:52:59.802Z",
           "comment": "Muito ruim"
+        },
+        {
+          "author": "josé",
+          "rating": "5",
+          "date": "2015-12-22T23:28:31.893Z",
+          "comment": "Maravilhoso"
         }
       ]
     },
