@@ -114,7 +114,7 @@ angular.module('conFusion.controllers', [])
     };
 
     $scope.addFavorite = function(index) {
-        console.log("index is " + index);
+        console.log('addFavorite :' + index + ' at MenuController');
         favoriteFactory.addToFavorites(index);
         $ionicListDelegate.closeOptionButtons();
     };
@@ -170,7 +170,7 @@ angular.module('conFusion.controllers', [])
     };
 }])
 
-.controller('DishDetailController', ['$scope', '$stateParams', 'menuFactory', '$ionicPopover', 'baseURL', function($scope, $stateParams, menuFactory, $ionicPopover, baseURL) {
+.controller('DishDetailController', ['$scope', '$stateParams', 'menuFactory', 'favoriteFactory', '$ionicPopover', 'baseURL', function($scope, $stateParams, menuFactory, favoriteFactory, $ionicPopover, baseURL) {
 
     $scope.baseURL = baseURL;
     $scope.dish = {};
@@ -190,19 +190,11 @@ angular.module('conFusion.controllers', [])
             }
         );
 
-    //var template = '<ion-popover-view><ion-header-bar> <h1 class="title">My Popover Title</h1> </ion-header-bar> <ion-content> Hello! </ion-content></ion-popover-view>';
-
-    //$scope.popover = $ionicPopOver.fromTemplate(template, {
-    //   scope: $scope
-    //});
-
-    // .fromTemplateUrl() method
     $scope.popover = $ionicPopover.fromTemplateUrl('templates/dish-detail-popover.html', {
         scope: $scope
     }).then(function(popover) {
         $scope.popover = popover;
     });
-
 
     $scope.openPopover = function($event) {
         $scope.popover.show($event);
@@ -210,6 +202,13 @@ angular.module('conFusion.controllers', [])
     $scope.closePopover = function() {
         $scope.popover.hide();
     };
+
+    $scope.addFavorite = function() {
+        console.log('addFavorite :' + $scope.dish.id + ' at DishDetailController');
+        favoriteFactory.addToFavorites($scope.dish.id);
+        $scope.closePopover();
+    };
+
 
 }])
 
@@ -289,6 +288,8 @@ angular.module('conFusion.controllers', [])
         });
 
         $scope.favorites = favoriteFactory.getFavorites();
+
+        console.log('FavoritesController : ' + $scope.favorites);
 
         $scope.dishes = menuFactory.getDishes().query(
             function(response) {
