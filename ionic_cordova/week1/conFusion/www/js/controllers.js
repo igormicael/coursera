@@ -170,79 +170,102 @@ angular.module('conFusion.controllers', [])
     };
 }])
 
-.controller('DishDetailController', ['$scope', '$stateParams', 'menuFactory', 'favoriteFactory', '$ionicPopover', 'baseURL', function($scope, $stateParams, menuFactory, favoriteFactory, $ionicPopover, baseURL) {
+.controller('DishDetailController', ['$scope', '$stateParams', 'menuFactory', 'favoriteFactory', '$ionicPopover', '$ionicModal', 'baseURL',
+    function($scope, $stateParams, menuFactory, favoriteFactory, $ionicPopover, $ionicModal, baseURL) {
 
-    $scope.baseURL = baseURL;
-    $scope.dish = {};
-    $scope.showDish = false;
-    $scope.message = "Loading ...";
+        $scope.baseURL = baseURL;
+        $scope.dish = {};
+        $scope.showDish = false;
+        $scope.message = "Loading ...";
 
-    $scope.dish = menuFactory.getDishes().get({
-            id: parseInt($stateParams.id, 10)
-        })
-        .$promise.then(
-            function(response) {
-                $scope.dish = response;
-                $scope.showDish = true;
-            },
-            function(response) {
-                $scope.message = "Error: " + response.status + " " + response.statusText;
-            }
-        );
+        $scope.dish = menuFactory.getDishes().get({
+                id: parseInt($stateParams.id, 10)
+            })
+            .$promise.then(
+                function(response) {
+                    $scope.dish = response;
+                    $scope.showDish = true;
+                },
+                function(response) {
+                    $scope.message = "Error: " + response.status + " " + response.statusText;
+                }
+            );
 
-    $scope.popover = $ionicPopover.fromTemplateUrl('templates/dish-detail-popover.html', {
-        scope: $scope
-    }).then(function(popover) {
-        $scope.popover = popover;
-    });
+        // pop over
 
-    $scope.openPopover = function($event) {
-        $scope.popover.show($event);
-    };
-    $scope.closePopover = function() {
-        $scope.popover.hide();
-    };
+        $scope.popover = $ionicPopover.fromTemplateUrl('templates/dish-detail-popover.html', {
+            scope: $scope
+        }).then(function(popover) {
+            $scope.popover = popover;
+        });
 
-    $scope.addFavorite = function() {
-        console.log('addFavorite :' + $scope.dish.id + ' at DishDetailController');
-        favoriteFactory.addToFavorites($scope.dish.id);
-        $scope.closePopover();
-    };
+        $scope.openPopover = function($event) {
+            $scope.popover.show($event);
+        };
+        $scope.closePopover = function() {
+            $scope.popover.hide();
+        };
 
+        $scope.addFavorite = function() {
+            console.log('addFavorite :' + $scope.dish.id + ' at DishDetailController');
+            favoriteFactory.addToFavorites($scope.dish.id);
+            $scope.closePopover();
+        };
 
-}])
+        // comment
 
-.controller('DishCommentController', ['$scope', 'menuFactory', function($scope, menuFactory) {
-
-    $scope.mycomment = {
-        rating: 5,
-        comment: "",
-        author: "",
-        date: ""
-    };
-
-    $scope.submitComment = function() {
-
-        $scope.mycomment.date = new Date().toISOString();
-        console.log($scope.mycomment);
-
-        $scope.dish.comments.push($scope.mycomment);
-        menuFactory.getDishes().update({
-            id: $scope.dish.id
-        }, $scope.dish);
-
-        $scope.commentForm.$setPristine();
-
+        //init
         $scope.mycomment = {
             rating: 5,
             comment: "",
             author: "",
             date: ""
         };
-    }
-}])
 
-// implement the IndexController and About Controller here
+        // Create the comment modal that we will use later
+        $ionicModal.fromTemplateUrl('templates/dish-comment.html', {
+            scope: $scope
+        }).then(function(modal) {
+            $scope.modal = modal;
+        });
+
+        // Triggered in the login modal to close it
+        $scope.closeCommentModal = function() {
+            $scope.modal.hide();
+        };
+
+        // Open the login modal
+        $scope.openCommentModal = function() {
+            //limpar o modal
+            $scope.modal.show();
+        };
+
+        $scope.addComment = function() {
+
+            $scope.mycomment.date = new Date().toISOString();
+            console.log($scope.mycomment);
+
+            $scope.dish.comments.push($scope.mycomment);
+            menuFactory.getDishes().update({
+                id: $scope.dish.id
+            }, $scope.dish);
+
+            //$scope.commentForm.$setPristine();
+
+            $scope.mycomment = {
+                rating: 5,
+                comment: "",
+                author: "",
+                date: ""
+            };
+
+            $scope.closeCommentModal();
+            $scope.closePopover();
+
+        }
+
+    }
+])
 
 .controller('IndexController', ['$scope', 'menuFactory', 'corporateFactory', 'baseURL', function($scope, menuFactory, corporateFactory, baseURL) {
 
