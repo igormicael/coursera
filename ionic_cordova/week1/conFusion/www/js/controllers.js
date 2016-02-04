@@ -170,7 +170,7 @@ angular.module('conFusion.controllers', [])
     };
 }])
 
-.controller('DishDetailController', ['$scope', '$stateParams', 'menuFactory', 'baseURL', function($scope, $stateParams, menuFactory, baseURL) {
+.controller('DishDetailController', ['$scope', '$stateParams', 'menuFactory', '$ionicPopover', 'baseURL', function($scope, $stateParams, menuFactory, $ionicPopover, baseURL) {
 
     $scope.baseURL = baseURL;
     $scope.dish = {};
@@ -190,6 +190,26 @@ angular.module('conFusion.controllers', [])
             }
         );
 
+    //var template = '<ion-popover-view><ion-header-bar> <h1 class="title">My Popover Title</h1> </ion-header-bar> <ion-content> Hello! </ion-content></ion-popover-view>';
+
+    //$scope.popover = $ionicPopOver.fromTemplate(template, {
+    //   scope: $scope
+    //});
+
+    // .fromTemplateUrl() method
+    $scope.popover = $ionicPopover.fromTemplateUrl('templates/dish-detail-popover.html', {
+        scope: $scope
+    }).then(function(popover) {
+        $scope.popover = popover;
+    });
+
+
+    $scope.openPopover = function($event) {
+        $scope.popover.show($event);
+    };
+    $scope.closePopover = function() {
+        $scope.popover.hide();
+    };
 
 }])
 
@@ -258,63 +278,64 @@ angular.module('conFusion.controllers', [])
 
 }])
 
-.controller('FavoritesController', ['$scope', 'menuFactory', 'favoriteFactory', 'baseURL', '$ionicListDelegate', '$ionicPopup', '$ionicLoading', '$timeout' ,
- function($scope, menuFactory, favoriteFactory, baseURL, $ionicListDelegate, $ionicPopup, $ionicLoading, $timeout) {
+.controller('FavoritesController', ['$scope', 'menuFactory', 'favoriteFactory', 'baseURL', '$ionicListDelegate', '$ionicPopup', '$ionicLoading', '$timeout',
+    function($scope, menuFactory, favoriteFactory, baseURL, $ionicListDelegate, $ionicPopup, $ionicLoading, $timeout) {
 
-    $scope.baseURL = baseURL;
-    $scope.shouldShowDelete = false;
-
-    $ionicLoading.show({
-        template : '<ion-spinner></ion-spinner> Loading...'
-    });
-
-    $scope.favorites = favoriteFactory.getFavorites();
-
-    $scope.dishes = menuFactory.getDishes().query(
-        function(response) {
-            $scope.dishes = response;
-            $timeout(function(){
-                $ionicLoading.hide();
-            }, 1000);
-        },
-        function(response) {
-            $scope.message = "Error: " + response.status + " " + response.statusText;
-            $timeout(function(){
-                $ionicLoading.hide();
-            }, 1000);
-        }
-    );
-    
-    //console.log($scope.dishes, $scope.favorites);
-
-    $scope.toggleDelete = function() {
-        $scope.shouldShowDelete = !$scope.shouldShowDelete;
-        console.log($scope.shouldShowDelete);
-    }
-
-    $scope.deleteFavorite = function(index) {
-
-        var confirmPopup = $ionicPopup.confirm({
-            title : 'Comfirm Delete',
-            template : 'Are you sure you want to delete this item ?'
-        })
-
-        confirmPopup.then(function(res){
-            if(res){
-                console.log('ok to delete');
-                favoriteFactory.deleteFromFavorites(index);
-            }else{
-                console.log('canceled delete');
-            }
-        })
-        
+        $scope.baseURL = baseURL;
         $scope.shouldShowDelete = false;
 
-    }
-}])
+        $ionicLoading.show({
+            template: '<ion-spinner></ion-spinner> Loading...'
+        });
 
-.filter( 'favoriteFilter', function() {
-    return function(dishes, favorites){
+        $scope.favorites = favoriteFactory.getFavorites();
+
+        $scope.dishes = menuFactory.getDishes().query(
+            function(response) {
+                $scope.dishes = response;
+                $timeout(function() {
+                    $ionicLoading.hide();
+                }, 1000);
+            },
+            function(response) {
+                $scope.message = "Error: " + response.status + " " + response.statusText;
+                $timeout(function() {
+                    $ionicLoading.hide();
+                }, 1000);
+            }
+        );
+
+        //console.log($scope.dishes, $scope.favorites);
+
+        $scope.toggleDelete = function() {
+            $scope.shouldShowDelete = !$scope.shouldShowDelete;
+            console.log($scope.shouldShowDelete);
+        }
+
+        $scope.deleteFavorite = function(index) {
+
+            var confirmPopup = $ionicPopup.confirm({
+                title: 'Comfirm Delete',
+                template: 'Are you sure you want to delete this item ?'
+            })
+
+            confirmPopup.then(function(res) {
+                if (res) {
+                    console.log('ok to delete');
+                    favoriteFactory.deleteFromFavorites(index);
+                } else {
+                    console.log('canceled delete');
+                }
+            })
+
+            $scope.shouldShowDelete = false;
+
+        }
+    }
+])
+
+.filter('favoriteFilter', function() {
+    return function(dishes, favorites) {
         var out = [];
 
         //TODO: refatorar
